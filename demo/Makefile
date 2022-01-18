@@ -4,7 +4,7 @@ CC     		:= gcc
 CFLAGS 		:= -g -Wall
 LDFLAGS 	:=
 INCLUDE 	:= -I..
-SRC			:= demo.c demo_stdout.c log.c
+SRC			:= $(wildcard *.c) log.c
 OBJS  		:= $(SRC:%.c=%.o)
 
 TARGET		:= demo
