@@ -42,17 +42,37 @@ static struct {
     Callback callbacks[MAX_CALLBACKS];
 } L = {.callbacks = {{stdout_callback, NULL, LOG_DISABLE}}};
 
-static const char *level_strings[] = {"EMERGE", "ALERT",  "CRITIC", "ERROR",
-                                      "WARN",   "NOTICE", "INFO",   "DEBUG"};
+static const char *level_strings[] = {
+    "EMERGE", "ALERT", "CRITIC", "ERROR", "WARN", "NOTICE", "INFO", "DEBUG",
+};
 
 #ifdef LOG_USE_COLOR
-static const char *level_colors[] = {"\x1b[94m", "\x1b[36m", "\x1b[32m",
-                                     "\x1b[33m", "\x1b[31m", "\x1b[35m"};
+
+#define NONE         "\033[m"
+#define RED          "\033[0;32;31m"
+#define LIGHT_RED    "\033[1;31m"
+#define GREEN        "\033[0;32;32m"
+#define LIGHT_GREEN  "\033[1;32m"
+#define BLUE         "\033[0;32;34m"
+#define LIGHT_BLUE   "\033[1;34m"
+#define CYAN         "\033[0;36m"
+#define LIGHT_CYAN   "\033[1;36m"
+#define PURPLE       "\033[0;35m"
+#define LIGHT_PURPLE "\033[1;35m"
+#define BROWN        "\033[0;33m"
+#define YELLOW       "\033[1;33m"
+#define DARY_GRAY    "\033[1;30m"
+#define LIGHT_GRAY   "\033[0;37m"
+#define WHITE        "\033[1;37m"
+
+static const char *level_colors[] = {
+    LIGHT_RED, LIGHT_RED, LIGHT_RED, LIGHT_RED, YELLOW, CYAN, GREEN, BLUE,
+};
 #endif
 
 static void stdout_callback(log_Event *ev) {
 #ifdef LOG_USE_COLOR
-    fprintf(ev->udata, "%s %s [%-6s]\x1b[0m \x1b[90m[%s:%-3d]:\x1b[0m ",
+    fprintf(ev->udata, "%s %s[%-6s]"NONE" "DARY_GRAY"[%s:%-3d]:"NONE" ",
             ev->fmttime, level_colors[ev->level], level_strings[ev->level],
             ev->file, ev->line);
 #else
