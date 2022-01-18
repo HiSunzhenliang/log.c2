@@ -15,10 +15,6 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) -o $@ $^
 
-demo.o: demo.c demo.h ../log.h
-
-demo_stdout.o: demo_stdout.c demo.h ../log.h
-
 log.o: ../log.c ../log.h
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) -c $<
 
