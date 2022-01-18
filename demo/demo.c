@@ -14,7 +14,6 @@ static demo g_demo[] = {
 };
 
 int main(int argc, char *argv[]) {
-    log_stdout_verbose(LOG_INFO);
     char *target_demo = argc == 2 ? argv[1] : "";
     int r = 0;
     char *name = NULL;
@@ -24,7 +23,7 @@ int main(int argc, char *argv[]) {
             name = g_demo[i].name;
             r = g_demo[i].main();
             if (r) {
-                log_error("%s demo failed.", g_demo[i].name);
+                printf("%s demo failed.\n", g_demo[i].name);
             }
             break;
         }
