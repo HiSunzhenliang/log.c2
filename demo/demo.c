@@ -10,6 +10,7 @@ typedef struct demo {
 
 static demo g_demo[] = {
     DEMO_MAIN_ITEM(stdout),
+    DEMO_MAIN_ITEM(file),
 };
 
 int main(int argc, char *argv[]) {
