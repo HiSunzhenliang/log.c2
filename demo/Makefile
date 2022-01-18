@@ -2,6 +2,7 @@
 
 CC     		:= gcc
 CFLAGS 		:= -g -Wall
+DEFINES		:= -DLOG_USE_COLOR
 LDFLAGS 	:=
 INCLUDE 	:= -I..
 SRC			:= $(wildcard *.c) log.c
@@ -13,13 +14,13 @@ TARGET		:= demo
 
 all: $(TARGET)
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) -o $@ $^
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(INCLUDE) -o $@ $^
 
 log.o: ../log.c ../log.h
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) -c $<
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(INCLUDE) -c $<
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) -c $<
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(INCLUDE) -c $<
 
 clean:
 	rm -f $(TARGET) $(OBJS)
