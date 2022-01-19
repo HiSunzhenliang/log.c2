@@ -73,11 +73,10 @@ static const char *level_colors[] = {
 static void stdout_callback(log_Event *ev) {
 #ifdef LOG_USE_COLOR
     fprintf(ev->udata, "%s %s[%-6s]"NONE" "DARY_GRAY"[%s:%-3d]:"NONE" ",
-            ev->fmttime, level_colors[ev->level], level_strings[ev->level],
-            ev->file, ev->line);
+            ev->fmttime, level_colors[ev->level], level_strings[ev->level], ev->file, ev->line);
 #else
-    fprintf(ev->udata, "%s [%-6s] [%s:%-3d]: ", ev->fmttime,
-            level_strings[ev->level], ev->file, ev->line);
+    fprintf(ev->udata, "%s [%-6s] [%s:%-3d]: ",
+            ev->fmttime, level_strings[ev->level], ev->file, ev->line);
 #endif
     vfprintf(ev->udata, ev->fmt, ev->ap);
     fprintf(ev->udata, "\n");
@@ -85,10 +84,10 @@ static void stdout_callback(log_Event *ev) {
 }
 
 static void file_callback(log_Event *ev) {
-    fprintf(ev->udata, "%s [%-6s] [%s:%-3d]: ", ev->fmttime,
-            level_strings[ev->level], ev->file, ev->line);
+    fprintf(ev->udata, "%s [%-6s] [%s:%-3d]: ",
+            ev->fmttime, level_strings[ev->level], ev->file, ev->line);
     vfprintf(ev->udata, ev->fmt, ev->ap);
-    fprintf(ev->udata, "\n");  // default \n
+    fprintf(ev->udata, "\n");
     fflush(ev->udata);
 }
 
@@ -104,11 +103,13 @@ static void unlock(void) {
     }
 }
 
-const char *log_level_string(int level) { return level_strings[level]; }
-
-void log_set_lock(log_LockFn fn, void *udata) {
-    L.lock = fn;
-    L.udata = udata;
+static void gen_fmttime(char fmt_time[]) {
+    struct timeval _time;
+    gettimeofday(&_time, NULL);
+    time_t t = _time.tv_sec;
+    struct tm *tm = localtime(&t);
+    size_t len = strftime(fmt_time, MAXLEN_FMTTIME, "%Y-%m-%d_%H:%M:%S", tm);
+    sprintf(&fmt_time[len], "_%03ld", _time.tv_usec / 1000);
 }
 
 static int clipping(int val, int max, int min) {
@@ -116,14 +117,19 @@ static int clipping(int val, int max, int min) {
     return tmp < min ? min : tmp;
 }
 
+const char *log_level_string(int level) { return level_strings[level]; }
+
+void log_set_lock(log_LockFn fn, void *udata) {
+    L.lock = fn;
+    L.udata = udata;
+}
+
 void log_stdout_verbose(int level) {
-    L.callbacks[0] = (Callback){stdout_callback, stdout,
-                                clipping(level, LOG_MAX, LOG_DISABLE)};
+    L.callbacks[0] = (Callback){stdout_callback, stdout, clipping(level, LOG_MAX, LOG_DISABLE)};
 }
 
 void log_stderr_verbose(int level) {
-    L.callbacks[0] = (Callback){stdout_callback, stderr,
-                                clipping(level, LOG_MAX, LOG_DISABLE)};
+    L.callbacks[0] = (Callback){stdout_callback, stderr, clipping(level, LOG_MAX, LOG_DISABLE)};
 }
 
 int log_add_callback(log_LogFn fn, void *udata, int level) {
@@ -139,15 +145,6 @@ int log_add_callback(log_LogFn fn, void *udata, int level) {
 
 int log_add_fp(FILE *fp, int level) {
     return log_add_callback(file_callback, fp, level);
-}
-
-static void gen_fmttime(char fmt_time[]) {
-    struct timeval _time;
-    gettimeofday(&_time, NULL);
-    time_t t = _time.tv_sec;
-    struct tm *tm = localtime(&t);
-    size_t len = strftime(fmt_time, MAXLEN_FMTTIME, "%Y-%m-%d_%H:%M:%S", tm);
-    sprintf(&fmt_time[len], "_%03ld", _time.tv_usec / 1000);
 }
 
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
