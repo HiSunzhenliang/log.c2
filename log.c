@@ -42,6 +42,11 @@ static struct {
     Callback callbacks[MAX_CALLBACKS];
 } L = {.callbacks = {{stdout_callback, NULL, LOG_DISABLE}}};
 
+typedef struct {
+    char* filename;
+    size_t n;
+} backup;
+
 static const char *level_strings[] = {
     "EMERGE", "ALERT", "CRITIC", "ERROR", "WARN", "NOTICE", "INFO", "DEBUG",
 };
@@ -117,6 +122,50 @@ static int clipping(int val, int max, int min) {
     return tmp < min ? min : tmp;
 }
 
+static FILE *try_open_log_file(FILE **file, char *path) {
+    if (*file) {
+        return *file;
+    }
+    *file = fopen(path, "a");
+    if (!*file) {
+        return NULL;
+    }
+    return *file;
+}
+
+static int backup_file(char *filename, char *bak_tail) {
+    char new_path[FILENAME_MAX];
+    snprintf(new_path, FILENAME_MAX, "%s_%s", filename, bak_tail);
+    return rename(filename, new_path);
+}
+
+static void file_backup_callback(log_Event *ev) {
+    backup *bp = ev->udata;
+
+    static int log_line_num = 0;
+    static FILE *fp;
+
+    if (!try_open_log_file(&fp, bp->filename)) {
+        return;
+    }
+
+    fprintf(fp, "%s [%-6s] [%s:%-3d]: ", ev->fmttime,
+            log_level_string(ev->level), ev->file, ev->line);
+    vfprintf(fp, ev->fmt, ev->ap);
+    fprintf(fp, "\n");
+    fflush(fp);
+    log_line_num += 1;
+
+    if (log_line_num >= bp->n) {
+        fclose(fp);
+        fp = NULL;
+        int err = backup_file(bp->filename, ev->fmttime);
+        if (!err) {
+            log_line_num = 0;
+        }
+    }
+}
+
 const char *log_level_string(int level) { return level_strings[level]; }
 
 void log_set_lock(log_LockFn fn, void *udata) {
@@ -145,6 +194,14 @@ int log_add_callback(log_LogFn fn, void *udata, int level) {
 
 int log_add_fp(FILE *fp, int level) {
     return log_add_callback(file_callback, fp, level);
+}
+
+int log_add_file_backup(char *filename, size_t n, int level) {
+    if (!filename || !n) {
+        return -1;
+    }
+    backup bp = {.filename = filename, .n = n};
+    return log_add_callback(file_backup_callback, &bp, level);
 }
 
 void log_log(int level, const char *file, int line, const char *fmt, ...) {

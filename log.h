@@ -58,6 +58,7 @@ void log_stdout_verbose(int level);
 void log_stderr_verbose(int level);
 int log_add_callback(log_LogFn fn, void *udata, int level);
 int log_add_fp(FILE *fp, int level);
+int log_add_file_backup(char *filename, size_t n, int level);
 
 void log_log(int level, const char *file, int line, const char *fmt, ...);
 
