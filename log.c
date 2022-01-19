@@ -193,7 +193,7 @@ int log_add_callback(log_LogFn fn, void *udata, int level) {
 }
 
 int log_add_fp(FILE *fp, int level) {
-    return log_add_callback(file_callback, fp, level);
+    return log_add_callback(file_callback, fp, clipping(level, LOG_MAX, LOG_DISABLE));
 }
 
 int log_add_file_backup(char *filename, size_t n, int level) {
@@ -201,7 +201,7 @@ int log_add_file_backup(char *filename, size_t n, int level) {
         return -1;
     }
     backup bp = {.filename = filename, .n = n};
-    return log_add_callback(file_backup_callback, &bp, level);
+    return log_add_callback(file_backup_callback, &bp, clipping(level, LOG_MAX, LOG_DISABLE));
 }
 
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
