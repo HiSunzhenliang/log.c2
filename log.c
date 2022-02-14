@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2022 sunzhenliang
+ * Copyright (c) 2021 sunzhenliang zhaolei wanglihe
  * Copyright (c) 2020 rxi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
