@@ -9,5 +9,6 @@
 DEMO_MAIN_DECL(stdout);
 DEMO_MAIN_DECL(file);
 DEMO_MAIN_DECL(file_backup);
+DEMO_MAIN_DECL(lock);
 
 #endif /* DEMO_H */

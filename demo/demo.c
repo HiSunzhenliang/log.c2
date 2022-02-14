@@ -12,6 +12,7 @@ static demo g_demo[] = {
     DEMO_MAIN_ITEM(stdout),
     DEMO_MAIN_ITEM(file),
     DEMO_MAIN_ITEM(file_backup),
+    DEMO_MAIN_ITEM(lock),
 };
 
 int main(int argc, char *argv[]) {
