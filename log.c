@@ -206,6 +206,12 @@ int log_add_file_backup(char *filename, size_t n, int level) {
 
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
     char fmttime[MAXLEN_FMTTIME];
+    char fmts[MAXLEN_FMTTIME];
+
+    if (fmt == NULL) {
+        sprintf(fmts, "");
+        fmt = fmts;
+    }
     gen_fmttime(fmttime);
     log_Event ev = {
         .fmttime = fmttime,
