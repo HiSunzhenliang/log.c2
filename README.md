@@ -4,7 +4,7 @@ A simple logging library.
 
 Log.c2 is based on [rxi/log.c](https://github.com/rxi/log.c) with [MIT LICENSE](https://github.com/rxi/log.c/blob/master/LICENSE) which is inactive now. Log.c has a very flexible and scalable architecture. There are some enhancements added in log.c2.
 
-<img src="/Users/sun/dev/log.c2/pic/demo.png" alt="demo" />
+<img src="./pic/demo.png" alt="demo" />
 
 Enhancements:
 
