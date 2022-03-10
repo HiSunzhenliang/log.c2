@@ -30,6 +30,7 @@ typedef struct {
     void *udata;
     int line;
     int level;
+    char* logfmts;
 } log_Event;
 
 typedef void (*log_LogFn)(log_Event *ev);
