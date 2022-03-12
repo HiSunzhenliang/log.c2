@@ -29,10 +29,13 @@
 #define MAX_CALLBACKS 32
 #define MAXLEN_FMTTIME 32
 
+static char default_fmt[] = "%TIME [%LEVEL] [%FILE:%LINE]";
+
 typedef struct {
     log_LogFn fn;
     void *udata;
     int level;
+    char* fmt;
 } Callback;
 
 static void stdout_callback(log_Event *ev);
@@ -41,7 +44,9 @@ static struct {
     void *udata;
     log_LockFn lock;
     Callback callbacks[MAX_CALLBACKS];
-} L = {.callbacks = {{stdout_callback, NULL, LOG_DISABLE}}};
+} L = {
+    .callbacks = {{stdout_callback, NULL, LOG_DISABLE, default_fmt}},
+};
 
 typedef struct {
     char* filename;
